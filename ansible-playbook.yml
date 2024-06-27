@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Pull frontend Docker image
+      docker_image:
+        name: "{{ docker_username }}/jobapp-ci-frontend"
+        tag: "v{{ build_number }}"
+        source: pull
+
+    - name: Pull backend Docker image
+      docker_image:
+        name: "{{ docker_username }}/jobapp-ci-backend"
+        tag: "v{{ build_number }}"
+        source: pull
+
+    - name: Run frontend Docker container
+      docker_container:
+        name: frontend
+        image: "{{ docker_username }}/jobapp-ci-frontend:v{{ build_number }}"
+        state: started
+        ports:
+          - "8086:5173"
+
+    - name: Run backend Docker container
+      docker_container:
+        name: backend
+        image: "{{ docker_username }}/jobapp-ci-backend:v{{ build_number }}"
+        state: started
+        ports:
+          - "8087:4000"
