@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    
+     environment {
+        BUILD_NUMBER = "env.BUILD_NUMBER"
+        DOCKER_USERNAME = "ravishaaaan"
+        NODE_IP="13.48.24.183"
+        EC2_NAME="ubuntu"
+    }
+
+    stages {
+        
+        
+        stage("Pull Files") {
+        
+            steps {
+              sshagent(['my_ec2_creds']) {         // install 'ssh agent' plugin & generate 'ssh-agent' pipeline syntax generator
+                sh "ssh -o StrictHostKeyChecking=no ${EC2_NAME}@${NODE_IP}"   // Node Server's private IP here
+                sh "docker pull ${DOCKER_USERNAME}/jobapp-ci-frontend:v${BUILD_NUMBER}"
+                sh "docker pull ${DOCKER_USERNAME}/jobapp-ci-backend:v${BUILD_NUMBER}"
+              }
+            }
+        }
+        stage("Deploy Files") {
+        
+            steps {
+              sshagent(['my_ec2_creds']) {         // install 'ssh agent' plugin & generate 'ssh-agent' pipeline syntax generator
+                sh "docker run -d -p 8087:4000 ${DOCKER_USERNAME}/jobapp-ci-backend:v${BUILD_NUMBER}"
+                sh "docker run -d -p 8086:5173 ${DOCKER_USERNAME}/jobapp-ci-frontend:v${BUILD_NUMBER}"
+              }
+            }
+        }
+    }
+    
+}
