@@ -47,7 +47,7 @@ const Login = () => {
         <div className="container">
           <div className="header">
             <img src="/JobZeelogo.png" alt="logo" />
-            <h3> Hello !!! Login to your account</h3>
+            <h3>Hi!!!!!!! Login to your account</h3>
           </div>
           <form>
             <div className="inputTag">
